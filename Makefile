@@ -19,3 +19,9 @@ commit-nix-configuration: ## commit /etc/nixos/configuration.nix
 
 push: ## git push
 	git push
+
+nix-update: ## Update channels and packages
+	nixos-rebuild switch --upgrade --use-remote-sudo
+
+cleanup: ## Cleanup old/unused objects in store
+	nixos-rebuild switch --upgrade
