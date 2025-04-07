@@ -39,23 +39,25 @@ in
     LC_TIME = "da_DK.UTF-8";
   };
 
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
   console.useXkbConfig = true;
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.xserver = {
+    # Enable the X11 windowing system.
+    enable = true;
+    
+    displayManager.gdm.enable = true;
+    desktopManager.gnome.enable = true;
 
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
-
-    # Needs to be run afterwards manually
-    #		gsettings reset org.gnome.desktop.input-sources xkb-options
-    #		gsettings reset org.gnome.desktop.input-sources sources
-    options = "caps:escape";
+    # Configure keymap in X11
+    xkb = {
+      layout = "us";
+      variant = "";
+      # Needs to be run afterwards manually
+      #		gsettings reset org.gnome.desktop.input-sources xkb-options
+      #		gsettings reset org.gnome.desktop.input-sources sources
+      options = "caps:escape";
+    };
   };
 
   # Enable sound with pipewire.
@@ -117,6 +119,18 @@ in
     thefuck = {
       enable = true;
     };
+    dconf = {
+      enable = true;
+      profiles.user.databases = [
+        {
+          settings = {
+            "org/gnome/desktop/interface" = {
+              enable-animations = false; 
+            };
+          };
+        }
+      ];
+    };
     git = {
       enable = true;
     };
@@ -132,6 +146,8 @@ in
         functions.enable = true; 
       };
     };
+
+
   };
 
   # Allow unfree packages
