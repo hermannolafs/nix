@@ -162,6 +162,7 @@ in
     # LIBRE
     librewolf
     signal-desktop
+    ghostty
     # (vscode-with-extensions.override {
     # 	vscode = vscodium;
     # 	vscodeExtensions = with vscode-extensions; [
@@ -173,6 +174,12 @@ in
     # 	];
     # })
 
+    # TERMINAL TROVE
+    # https://terminaltrove.com/list/
+    wtfis 
+    btop
+    fzf
+
     # Elixir
     elixir
 
@@ -183,7 +190,6 @@ in
     
     # CLI shit
     gh
-    btop
     
     # Tools
     gnumake
