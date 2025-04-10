@@ -7,19 +7,17 @@ in
 {
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
-      # We use the VSCode package to configure vscodium
-      # "hello-unfree" 
+        # We use the VSCode package to configure vscodium
+        "hello-unfree" 
     ];
 
-
   imports =
-    [ # Include the results of the hardware scan.
+    [
       (import "${nixos-hardware}/lenovo/thinkpad/p50")
       ./hardware-configuration.nix
       (import "${home-manager}/nixos")
     ];
 
-  # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   networking.hostName = "nixos"; # Define your hostname.
@@ -41,26 +39,23 @@ in
 
   console.useXkbConfig = true;
 
-  # Enable the GNOME Desktop Environment.
   services.xserver = {
-    # Enable the X11 windowing system.
     enable = true;
     
     displayManager.gdm.enable = true;
     desktopManager.gnome.enable = true;
 
-    # Configure keymap in X11
     xkb = {
       layout = "us";
       variant = "";
+
       # Needs to be run afterwards manually
-      #		gsettings reset org.gnome.desktop.input-sources xkb-options
-      #		gsettings reset org.gnome.desktop.input-sources sources
+      # gsettings reset org.gnome.desktop.input-sources xkb-options
+      #	gsettings reset org.gnome.desktop.input-sources sources
       options = "caps:escape";
     };
   };
 
-  # Enable sound with pipewire.
   hardware = {
     pulseaudio.enable = false;
   };
@@ -71,17 +66,8 @@ in
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
   };
 
-
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.defaultUserShell = pkgs.fish;
   users.users.hermanno = {
     isNormalUser = true;
@@ -105,16 +91,34 @@ in
 	jnoortheen.nix-ide
 	elixir-lsp.vscode-elixir-ls
 	foxundermoon.shell-format
+      ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+	{
+          name = "srcery-colors";
+          publisher = "srcery-colors";
+          version = "0.3.8";
+          sha256 = "f550d8aa662ee238ab8d61996af4aa18cd94dfa271170caa11e5e12625ccbd18";
+	}
       ];
       userSettings = {
         "keyboard.dispatch" = "keyCode";	
+	# "workbench.colorTheme" = "";
+	# Disable top bar 
+	"window.titleBarStyle" = "custom";
+	"editor.titleBar.enabled" = false;
+	# Minimalist shit
+	"breadcrumbs.enabled" = false;
+	"editor.minimap.enabled" = false;
+	"editor.renderLineHighlight" = "gutter";
+  	"workbench.activityBar.visible" = false;
+	"workbench.tree.indent" = 10;
+	# Theme
+	"workbench.colorTheme" = "Srcery";
       };
     };
 
     home.stateVersion = "24.11";
   };
 
-  # Install firefox.
   programs = {
     thefuck = {
       enable = true;
@@ -163,16 +167,6 @@ in
     librewolf
     signal-desktop
     ghostty
-    # (vscode-with-extensions.override {
-    # 	vscode = vscodium;
-    # 	vscodeExtensions = with vscode-extensions; [
-    # 		ms-python.python
-    # 		jnoortheen.nix-ide
-    #     vscodevim.vim
-    #     elixir-lsp.vscode-elixir-ls
-    #     foxundermoon.shell-format
-    # 	];
-    # })
 
     # TERMINAL TROVE
     # https://terminaltrove.com/list/
@@ -186,7 +180,6 @@ in
     # Python
     python314
     poetry
-    
     
     # CLI shit
     gh
