@@ -5,6 +5,7 @@ let
   nixos-hardware = builtins.fetchTarball https://github.com/NixOS/nixos-hardware/archive/master.tar.gz;
 in
 {
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
         # We use the VSCode package to configure vscodium
@@ -84,7 +85,12 @@ in
     # It to correctly use keyboard configuration from xkb
     programs.vscode = {
       enable = true;
-      package = pkgs.vscodium;
+      package = pkgs.vscodium.overrideAttrs (oldAttrs: rec {
+	# This actually doesn't work. The solution is just to
+        # Activate the shell for whatever elixir flake, and to launch codium from there :shrug:
+	buildInputs = oldAttrs.buildInputs ++ [ pkgs.gnumake pkgs.gcc ]; 
+      });
+
       extensions = with pkgs.vscode-extensions; [
         vscodevim.vim
 	ms-python.python
@@ -100,8 +106,8 @@ in
 	}
       ];
       userSettings = {
+	# Ensure xkb caps:escape remap works
         "keyboard.dispatch" = "keyCode";	
-	# "workbench.colorTheme" = "";
 	# Disable top bar 
 	"window.titleBarStyle" = "custom";
 	"editor.titleBar.enabled" = false;
@@ -113,6 +119,23 @@ in
 	"workbench.tree.indent" = 10;
 	# Theme
 	"workbench.colorTheme" = "Srcery";
+	# Nix
+	"nix.enableLanguageServer" = true;
+	# Vim
+	"vim.leader" = "<space>";
+        "vim.highlightedyank.enable" = true;
+	"vim.handleKeys" = {
+	  "<C-b>" = false;
+	  "<C-p>" = false;
+	  "<C-w>" = false;
+	};
+	# Elixir
+	# https://github.com/elixir-lsp/elixir-ls?tab=readme-ov-file#elixirls-configuration-settings
+	"elixirLS.envVariables" = {
+	  "CC" = "gcc"; 
+	  "MAKE" = "make"; 
+	};
+		
       };
     };
 
@@ -176,6 +199,7 @@ in
 
     # Elixir
     elixir
+    elixir-ls
 
     # Python
     python314
@@ -185,8 +209,8 @@ in
     gh
     
     # Tools
-    gnumake
     tree
+
     
     # Closed source gui
     _1password-gui
